@@ -1,0 +1,23 @@
+{
+    "name": "loafer/laravel-sortable",
+    "description": "Laravel package for sorting models",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Ruslan Popelyshyn",
+            "email": "platonpopelishin@gmail.com",
+            "role": "Developer",
+            "homepage": "https://github.com/Loafer19"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0|^8.1|^8.2"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Loafer\\": "src/"
+        }
+    }
+}
