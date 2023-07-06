@@ -8,17 +8,24 @@ trait Sortable
     {
         self::creating(function ($model) {
             $model->{$model->getSortColumn()} = $model->query()
+                ->when($model->hasNamedScope('sortableScope'), fn ($q) => $q->sortableScope($model))
                 ->max($model->getSortColumn()) + 1;
         });
 
         self::updating(function ($model) {
             if ($model->isDirty($model->getSortColumn())) {
                 if ($model->{$model->getSortColumn()} > $model->getOriginal($model->getSortColumn())) {
-                    $model->decrementSortIndex();
+                    $model->decrementOthers();
+                } else {
+                    $model->incrementOthers();
                 }
-
-                $model->incrementSortIndex();
             }
+        });
+
+        self::deleting(function ($model) {
+            $model->query()
+                ->when($model->hasNamedScope('sortableScope'), fn ($q) => $q->sortableScope($model))
+                ->where($model->getSortColumn(), '>', $model->{$model->getSortColumn()});
         });
     }
 
@@ -27,7 +34,7 @@ trait Sortable
         return $this->sortColumn ?? 'sort_order';
     }
 
-    private function incrementSortIndex(): void
+    private function incrementOthers(): void
     {
         $this->query()
             ->when($this->hasNamedScope('sortableScope'), fn ($q) => $q->sortableScope($this))
@@ -36,7 +43,7 @@ trait Sortable
             ->increment($this->getSortColumn());
     }
 
-    private function decrementSortIndex(): void
+    private function decrementOthers(): void
     {
         $this->query()
             ->when($this->hasNamedScope('sortableScope'), fn ($q) => $q->sortableScope($this))
